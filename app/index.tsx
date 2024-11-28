@@ -1,33 +1,39 @@
-// screens/SimpleSender.js
 import "react-native-get-random-values";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
+  SafeAreaView,
+  ScrollView,
+  ActivityIndicator,
 } from "react-native";
-import { createWalletClient, http, parseEther, createPublicClient } from "viem";
+import {
+  createPublicClient,
+  http,
+  parseUnits,
+  formatUnits,
+  encodeFunctionData,
+} from "viem";
 import { privateKeyToAccount } from "viem/accounts";
+import Constants from "expo-constants";
+import { USDE_ABI, USDE_ADDRESS } from "./constants/usdeABI";
 
-// Let's create our sender component
-export default function SimpleSender() {
-  const [recipientAddress, setRecipientAddress] = useState("");
-  const [amount, setAmount] = useState("");
+export default function USDESender() {
+  const [recipientAddress, setRecipientAddress] = useState(
+    "0xCafa93E9985793E2475bD58B9215c21Dbd421fD0"
+  );
+  const [amount, setAmount] = useState("1");
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [balance, setBalance] = useState("0");
 
-  // Replace this with your private key (remove the '0x' prefix if present)
   const PRIVATE_KEY = process.env.EXPO_PUBLIC_PRIVATE_KEY;
-
-  // Create account from private key
   const account = privateKeyToAccount(`0x${PRIVATE_KEY}`);
 
-  // Define transport and client
-  const transport = http("https://testnet.rpc.ethena.fi");
-
-  // Create public client for reading from the blockchain
   const publicClient = createPublicClient({
     chain: {
       id: 52085143,
@@ -43,98 +49,189 @@ export default function SimpleSender() {
         public: { http: ["https://testnet.rpc.ethena.fi"] },
       },
     },
-    transport: transport,
+    transport: http("https://testnet.rpc.ethena.fi"),
   });
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      try {
+        const userBalance = await publicClient.readContract({
+          address: USDE_ADDRESS,
+          abi: USDE_ABI,
+          functionName: "balanceOf",
+          args: [account.address],
+        });
+        setBalance(formatUnits(userBalance, 18));
+      } catch (error) {
+        console.error("Error fetching balance:", error);
+      }
+    };
+
+    fetchBalance();
+    const interval = setInterval(fetchBalance, 15000);
+    return () => clearInterval(interval);
+  }, [account.address]);
+
+  const handleInputChange = (setter) => (value) => {
+    setErrorMessage("");
+    setSuccessMessage("");
+    setter(value);
+  };
 
   const handleSend = async () => {
     try {
       setLoading(true);
+      setErrorMessage("");
+      setSuccessMessage("");
 
-      // Basic validation
       if (!recipientAddress || !amount) {
-        Alert.alert("Error", "Please fill in all fields");
+        setErrorMessage("Please fill in all fields");
         return;
       }
 
-      // Convert amount to Wei
-      const value = parseEther(amount);
+      if (!recipientAddress.match(/^0x[a-fA-F0-9]{40}$/)) {
+        setErrorMessage("Invalid Ethereum address format");
+        return;
+      }
 
-      // Prepare the transaction
-      const request = await publicClient.prepareTransactionRequest({
-        account,
-        to: recipientAddress,
-        value,
+      if (isNaN(amount) || parseFloat(amount) <= 0) {
+        setErrorMessage("Please enter a valid amount");
+        return;
+      }
+
+      const amountInWei = parseUnits(amount, 18);
+      const userBalance = parseUnits(balance, 18);
+
+      if (amountInWei > userBalance) {
+        setErrorMessage("Insufficient USDE balance");
+        return;
+      }
+
+      const data = encodeFunctionData({
+        abi: USDE_ABI,
+        functionName: "transfer",
+        args: [recipientAddress, amountInWei],
       });
 
-      // Send the transaction
-      const hash = await publicClient.sendRawTransaction({
-        serializedTransaction: await account.signTransaction(request),
-      });
-
-      Alert.alert("Success", `Transaction sent! Hash: ${hash}`, [
-        { text: "OK" },
+      const [nonce, gasPrice] = await Promise.all([
+        publicClient.getTransactionCount({ address: account.address }),
+        publicClient.getGasPrice(),
       ]);
 
-      // Clear form
+      const transaction = {
+        to: USDE_ADDRESS,
+        data,
+        nonce,
+        gasPrice,
+        value: 0n,
+        chainId: 52085143,
+        from: account.address,
+        gas: 100000n,
+      };
+
+      const signedTx = await account.signTransaction(transaction);
+      const hash = await publicClient.sendRawTransaction({
+        serializedTransaction: signedTx,
+      });
+
+      setSuccessMessage(`Transaction sent! Hash: ${hash}`);
       setRecipientAddress("");
       setAmount("");
     } catch (error) {
-      // Handle different types of errors
-      let errorMessage = "An error occurred";
+      console.log("Error details:", error);
+      let message = "An error occurred";
       if (error.message) {
-        errorMessage = error.message.split("\n")[0]; // Get first line of error
+        message = error.message
+          .split("\n")[0]
+          .replace(/\b(reverted|execution|transaction)\b/gi, "")
+          .replace(/\s+/g, " ")
+          .trim();
       }
-      Alert.alert("Error", errorMessage);
+      setErrorMessage(message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Send ETH on Ble Testnet</Text>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Recipient Address</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="0x..."
-          value={recipientAddress}
-          onChangeText={setRecipientAddress}
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
-      </View>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Amount (ETH)</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="0.0"
-          value={amount}
-          onChangeText={setAmount}
-          keyboardType="decimal-pad"
-        />
-      </View>
-
-      <TouchableOpacity
-        style={[styles.sendButton, loading && styles.sendButtonDisabled]}
-        onPress={handleSend}
-        disabled={loading}
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        keyboardShouldPersistTaps="handled"
       >
-        <Text style={styles.sendButtonText}>
-          {loading ? "Sending..." : "Send ETH"}
-        </Text>
-      </TouchableOpacity>
-    </View>
+        <View style={styles.container}>
+          <Text style={styles.title}>Send USDE Tokens</Text>
+
+          <View style={styles.balanceContainer}>
+            <Text style={styles.balanceLabel}>Your USDE Balance</Text>
+            <Text style={styles.balanceAmount}>
+              {parseFloat(balance).toFixed(4)} USDE
+            </Text>
+          </View>
+
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Recipient Address</Text>
+            <TextInput
+              style={[styles.input, errorMessage && styles.inputError]}
+              placeholder="0x..."
+              value={recipientAddress}
+              onChangeText={handleInputChange(setRecipientAddress)}
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+          </View>
+
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Amount (USDE)</Text>
+            <TextInput
+              style={[styles.input, errorMessage && styles.inputError]}
+              placeholder="0.0"
+              value={amount}
+              onChangeText={handleInputChange(setAmount)}
+              keyboardType="decimal-pad"
+            />
+          </View>
+
+          {errorMessage ? (
+            <View style={styles.messageContainer}>
+              <Text style={styles.errorText}>{errorMessage}</Text>
+            </View>
+          ) : null}
+
+          {successMessage ? (
+            <View style={styles.messageContainer}>
+              <Text style={styles.successText}>{successMessage}</Text>
+            </View>
+          ) : null}
+
+          <TouchableOpacity
+            style={[styles.sendButton, loading && styles.sendButtonDisabled]}
+            onPress={handleSend}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#ffffff" />
+            ) : (
+              <Text style={styles.sendButtonText}>Send USDE</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#f8f9fa",
+  },
+  scrollContainer: {
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#f8f9fa",
   },
   title: {
     fontSize: 24,
@@ -142,6 +239,23 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     color: "#2c3e50",
     textAlign: "center",
+  },
+  balanceContainer: {
+    backgroundColor: "#ffffff",
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 20,
+    alignItems: "center",
+  },
+  balanceLabel: {
+    fontSize: 14,
+    color: "#95a5a6",
+    marginBottom: 4,
+  },
+  balanceAmount: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#2c3e50",
   },
   inputContainer: {
     marginBottom: 20,
@@ -158,6 +272,24 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderWidth: 1,
     borderColor: "#e0e0e0",
+  },
+  inputError: {
+    borderColor: "#e74c3c",
+  },
+  messageContainer: {
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 20,
+  },
+  errorText: {
+    color: "#e74c3c",
+    fontSize: 14,
+    textAlign: "center",
+  },
+  successText: {
+    color: "#27ae60",
+    fontSize: 14,
+    textAlign: "center",
   },
   sendButton: {
     backgroundColor: "#3498db",
