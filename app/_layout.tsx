@@ -10,7 +10,6 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
 import "../global.css";
-
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 SplashScreen.preventAutoHideAsync();
@@ -18,7 +17,12 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
-    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+    // The naming convention here is important
+    "Bricolage-Light": require("../assets/fonts/BricolageGrotesque-Light.ttf"),
+    Bricolage: require("../assets/fonts/BricolageGrotesque-Regular.ttf"),
+    "Bricolage-Medium": require("../assets/fonts/BricolageGrotesque-Medium.ttf"),
+    "Bricolage-SemiBold": require("../assets/fonts/BricolageGrotesque-SemiBold.ttf"),
+    "Bricolage-Bold": require("../assets/fonts/BricolageGrotesque-Bold.ttf"),
   });
 
   useEffect(() => {

@@ -36,6 +36,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "fonts": [
+      "./assets/fonts/BricolageGrotesque-Light.ttf",
+      "./assets/fonts/BricolageGrotesque-Regular.ttf",
+      "./assets/fonts/BricolageGrotesque-Medium.ttf",
+      "./assets/fonts/BricolageGrotesque-SemiBold.ttf",
+      "./assets/fonts/BricolageGrotesque-Bold.ttf"
+    ]
   }
 }
