@@ -18,8 +18,8 @@ import {
   encodeFunctionData,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import Constants from "expo-constants";
 import { USDE_ABI, USDE_ADDRESS } from "./constants/usdeABI";
+import "nativewind";
 
 export default function USDESender() {
   const [recipientAddress, setRecipientAddress] = useState(
@@ -154,25 +154,30 @@ export default function USDESender() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView
-        contentContainerStyle={styles.scrollContainer}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View style={styles.container}>
-          <Text style={styles.title}>Send USDE Tokens</Text>
+    <SafeAreaView className="flex-1 bg-gray-50">
+      <ScrollView className="flex-1" keyboardShouldPersistTaps="handled">
+        <View className="flex-1 p-5">
+          <Text className="text-2xl font-bold mb-8 text-gray-800 text-center">
+            Send USDE Tokens
+          </Text>
 
-          <View style={styles.balanceContainer}>
-            <Text style={styles.balanceLabel}>Your USDE Balance</Text>
-            <Text style={styles.balanceAmount}>
+          <View className="bg-white p-4 rounded-xl mb-5 items-center">
+            <Text className="text-sm text-gray-500 mb-1">
+              Your USDE Balance
+            </Text>
+            <Text className="text-2xl font-bold text-gray-800">
               {parseFloat(balance).toFixed(4)} USDE
             </Text>
           </View>
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Recipient Address</Text>
+          <View className="mb-5">
+            <Text className="text-base mb-2 text-gray-700">
+              Recipient Address
+            </Text>
             <TextInput
-              style={[styles.input, errorMessage && styles.inputError]}
+              className={`bg-white p-4 rounded-xl border ${
+                errorMessage ? "border-red-500" : "border-gray-200"
+              }`}
               placeholder="0x..."
               value={recipientAddress}
               onChangeText={handleInputChange(setRecipientAddress)}
@@ -181,10 +186,12 @@ export default function USDESender() {
             />
           </View>
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Amount (USDE)</Text>
+          <View className="mb-5">
+            <Text className="text-base mb-2 text-gray-700">Amount (USDE)</Text>
             <TextInput
-              style={[styles.input, errorMessage && styles.inputError]}
+              className={`bg-white p-4 rounded-xl border ${
+                errorMessage ? "border-red-500" : "border-gray-200"
+              }`}
               placeholder="0.0"
               value={amount}
               onChangeText={handleInputChange(setAmount)}
@@ -192,27 +199,35 @@ export default function USDESender() {
             />
           </View>
 
-          {errorMessage ? (
-            <View style={styles.messageContainer}>
-              <Text style={styles.errorText}>{errorMessage}</Text>
+          {errorMessage && (
+            <View className="p-3 rounded-lg mb-5">
+              <Text className="text-red-500 text-sm text-center">
+                {errorMessage}
+              </Text>
             </View>
-          ) : null}
+          )}
 
-          {successMessage ? (
-            <View style={styles.messageContainer}>
-              <Text style={styles.successText}>{successMessage}</Text>
+          {successMessage && (
+            <View className="p-3 rounded-lg mb-5">
+              <Text className="text-green-600 text-sm text-center">
+                {successMessage}
+              </Text>
             </View>
-          ) : null}
+          )}
 
           <TouchableOpacity
-            style={[styles.sendButton, loading && styles.sendButtonDisabled]}
+            className={`p-4 rounded-xl items-center mt-5 ${
+              loading ? "bg-gray-400" : "bg-blue-500"
+            }`}
             onPress={handleSend}
             disabled={loading}
           >
             {loading ? (
               <ActivityIndicator color="#ffffff" />
             ) : (
-              <Text style={styles.sendButtonText}>Send USDE</Text>
+              <Text className="text-white text-lg font-semibold">
+                Send USDE
+              </Text>
             )}
           </TouchableOpacity>
         </View>
@@ -220,7 +235,6 @@ export default function USDESender() {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
