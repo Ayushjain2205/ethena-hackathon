@@ -1,3 +1,9 @@
+export const chain = {
+  id: 52085143,
+  name: "Ble Testnet",
+  network: "ble-testnet",
+};
+
 // Contract address
 export const USDE_ADDRESS = "0x426E7d03f9803Dd11cb8616C65b99a3c0AfeA6dE";
 
