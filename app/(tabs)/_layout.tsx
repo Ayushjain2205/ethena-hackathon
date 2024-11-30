@@ -1,5 +1,7 @@
 import { Tabs } from "expo-router";
 import { Home, CreditCard, Gift, User, Scan } from "lucide-react-native";
+import { Text } from "react-native";
+import "nativewind";
 
 export default function TabsLayout() {
   return (
@@ -7,7 +9,7 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: "#8B5CF6",
+          backgroundColor: "#9333EA",
           borderTopWidth: 0,
           paddingBottom: 10,
           paddingTop: 10,
@@ -15,6 +17,11 @@ export default function TabsLayout() {
         },
         tabBarActiveTintColor: "#ffffff",
         tabBarInactiveTintColor: "rgba(255,255,255,0.5)",
+        tabBarLabel: ({ children, color }) => (
+          <Text className="font-sans text-xs" style={{ color }}>
+            {children}
+          </Text>
+        ),
       }}
     >
       <Tabs.Screen
