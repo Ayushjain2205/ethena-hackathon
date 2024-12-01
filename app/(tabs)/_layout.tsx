@@ -13,12 +13,12 @@ export default function TabsLayout() {
           borderTopWidth: 0,
           paddingBottom: 10,
           paddingTop: 10,
-          height: 70,
+          height: 90,
         },
         tabBarActiveTintColor: "#ffffff",
         tabBarInactiveTintColor: "rgba(255,255,255,0.5)",
         tabBarLabel: ({ children, color }) => (
-          <Text className="font-sans text-xs" style={{ color }}>
+          <Text className="font-sans text-sm font-semibold" style={{ color }}>
             {children}
           </Text>
         ),
