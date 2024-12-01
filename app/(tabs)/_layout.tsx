@@ -39,9 +39,9 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="scan"
+        name="pay"
         options={{
-          title: "Scan",
+          title: "Pay",
           tabBarIcon: ({ color }) => <Scan size={24} color={color} />,
         }}
       />
