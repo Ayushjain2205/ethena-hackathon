@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
-import { router } from "expo-router";
 import {
   StyleSheet,
   Text,
@@ -20,7 +19,6 @@ export default function PayScreen() {
   const [activeTab, setActiveTab] = useState<"scan" | "send">("scan");
   const [permission, requestPermission] = useCameraPermissions();
   const [isFlashlightOn, setIsFlashlightOn] = useState(false);
-  const [isScanning, setIsScanning] = useState(true);
 
   if (!permission) {
     return <View />;
@@ -41,37 +39,17 @@ export default function PayScreen() {
     setFacing((current) => (current === "back" ? "front" : "back"));
   }
 
-  const handleBarCodeScanned = ({
-    type,
-    data,
-  }: {
-    type: string;
-    data: string;
-  }) => {
-    if (!isScanning) return;
-
-    setIsScanning(false);
-    router.push({
-      pathname: "/pay",
-      params: { code: data },
-    });
-  };
-
   const renderScanTab = () => (
     <View style={styles.container}>
       <CameraView
         style={styles.camera}
         facing={facing}
-        enableTorch={isFlashlightOn}
-        barCodeScannerSettings={{
-          barCodeTypes: ["qr"],
-        }}
-        onBarCodeScanned={handleBarCodeScanned}
+        flashMode={isFlashlightOn ? "torch" : "off"}
       >
-        {/* Rest of your camera view JSX remains the same */}
+        {/* Header */}
         <SafeAreaView style={styles.overlay}>
           <View style={styles.header}>
-            <TouchableOpacity onPress={() => router.back()}>
+            <TouchableOpacity onPress={() => {}}>
               <X color="white" size={24} />
             </TouchableOpacity>
             <View style={styles.headerIcons}>
@@ -80,18 +58,16 @@ export default function PayScreen() {
               >
                 <Flashlight color="white" size={24} />
               </TouchableOpacity>
-              <TouchableOpacity
-                style={{ marginLeft: 20 }}
-                activeOpacity={1}
-                onPress={() => router.push("/money")}
-              >
+              <TouchableOpacity style={{ marginLeft: 20 }}>
                 <QrCode color="white" size={24} />
               </TouchableOpacity>
             </View>
           </View>
 
+          {/* Scanner Frame */}
           <View style={styles.scannerFrameContainer}>
             <View style={styles.scannerFrame}>
+              {/* Corners */}
               <View style={[styles.corner, styles.cornerTopLeft]} />
               <View style={[styles.corner, styles.cornerTopRight]} />
               <View style={[styles.corner, styles.cornerBottomLeft]} />
@@ -99,6 +75,7 @@ export default function PayScreen() {
             </View>
           </View>
 
+          {/* Bottom Section */}
           <View style={styles.bottomSection}>
             <TouchableOpacity style={styles.uploadButton}>
               <ImageIcon color="white" size={20} style={{ marginRight: 8 }} />
@@ -112,7 +89,6 @@ export default function PayScreen() {
     </View>
   );
 
-  // Rest of your component remains the same
   const renderSendTab = () => (
     <View style={styles.sendContainer}>
       <Text
@@ -134,7 +110,13 @@ export default function PayScreen() {
           style={[styles.tab, activeTab === "scan" ? styles.activeTab : null]}
           onPress={() => setActiveTab("scan")}
         >
-          <Text className="font-sans font-semibold" style={styles.tabText}>
+          <Text
+            className="font-sans font-semibold"
+            style={[
+              styles.tabText,
+              { color: activeTab === "scan" ? "#9333EA" : "white" },
+            ]}
+          >
             Scan
           </Text>
         </TouchableOpacity>
@@ -142,7 +124,13 @@ export default function PayScreen() {
           style={[styles.tab, activeTab === "send" ? styles.activeTab : null]}
           onPress={() => setActiveTab("send")}
         >
-          <Text className="font-sans font-semibold" style={styles.tabText}>
+          <Text
+            className="font-sans font-semibold"
+            style={[
+              styles.tabText,
+              { color: activeTab === "send" ? "#9333EA" : "white" },
+            ]}
+          >
             Send
           </Text>
         </TouchableOpacity>
@@ -151,8 +139,6 @@ export default function PayScreen() {
     </SafeAreaView>
   );
 }
-
-// Styles remain the same
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -202,7 +188,7 @@ const styles = StyleSheet.create({
     left: 0,
     borderTopWidth: 4,
     borderLeftWidth: 4,
-    borderColor: "#9333EA",
+    borderColor: "#FF6B6B",
     borderTopLeftRadius: 12,
   },
   cornerTopRight: {
@@ -210,7 +196,7 @@ const styles = StyleSheet.create({
     right: 0,
     borderTopWidth: 4,
     borderRightWidth: 4,
-    borderColor: "#9333EA",
+    borderColor: "#FFB946",
     borderTopRightRadius: 12,
   },
   cornerBottomLeft: {
@@ -218,7 +204,7 @@ const styles = StyleSheet.create({
     left: 0,
     borderBottomWidth: 4,
     borderLeftWidth: 4,
-    borderColor: "#9333EA",
+    borderColor: "#4D7CFE",
     borderBottomLeftRadius: 12,
   },
   cornerBottomRight: {
@@ -226,7 +212,7 @@ const styles = StyleSheet.create({
     right: 0,
     borderBottomWidth: 4,
     borderRightWidth: 4,
-    borderColor: "#9333EA",
+    borderColor: "#3DD598",
     borderBottomRightRadius: 12,
   },
   bottomSection: {
@@ -237,7 +223,7 @@ const styles = StyleSheet.create({
   uploadButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#262626",
+    backgroundColor: "rgba(255,255,255,0.2)",
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 50,
@@ -260,19 +246,23 @@ const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: "row",
     marginBottom: 10,
+    backgroundColor: "#9333EA",
+    borderRadius: 25,
+    padding: 4,
+    margin: 10,
   },
   tab: {
     flex: 1,
     paddingVertical: 10,
-    backgroundColor: "#8B5CF6",
+    borderRadius: 21,
   },
   activeTab: {
-    backgroundColor: "#7C3AED",
+    backgroundColor: "white",
   },
   tabText: {
-    color: "white",
     textAlign: "center",
     fontWeight: "bold",
+    fontSize: 16,
   },
   sendContainer: {
     flex: 1,
