@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
+import { router } from "expo-router";
 import {
   StyleSheet,
   Text,
@@ -19,6 +20,7 @@ export default function PayScreen() {
   const [activeTab, setActiveTab] = useState<"scan" | "send">("scan");
   const [permission, requestPermission] = useCameraPermissions();
   const [isFlashlightOn, setIsFlashlightOn] = useState(false);
+  const [isScanning, setIsScanning] = useState(true);
 
   if (!permission) {
     return <View />;
@@ -39,17 +41,37 @@ export default function PayScreen() {
     setFacing((current) => (current === "back" ? "front" : "back"));
   }
 
+  const handleBarCodeScanned = ({
+    type,
+    data,
+  }: {
+    type: string;
+    data: string;
+  }) => {
+    if (!isScanning) return;
+
+    setIsScanning(false);
+    router.push({
+      pathname: "/pay",
+      params: { code: data },
+    });
+  };
+
   const renderScanTab = () => (
     <View style={styles.container}>
       <CameraView
         style={styles.camera}
         facing={facing}
-        flashMode={isFlashlightOn ? "torch" : "off"}
+        enableTorch={isFlashlightOn}
+        barCodeScannerSettings={{
+          barCodeTypes: ["qr"],
+        }}
+        onBarCodeScanned={handleBarCodeScanned}
       >
-        {/* Header */}
+        {/* Rest of your camera view JSX remains the same */}
         <SafeAreaView style={styles.overlay}>
           <View style={styles.header}>
-            <TouchableOpacity onPress={() => {}}>
+            <TouchableOpacity onPress={() => router.back()}>
               <X color="white" size={24} />
             </TouchableOpacity>
             <View style={styles.headerIcons}>
@@ -58,16 +80,18 @@ export default function PayScreen() {
               >
                 <Flashlight color="white" size={24} />
               </TouchableOpacity>
-              <TouchableOpacity style={{ marginLeft: 20 }}>
+              <TouchableOpacity
+                style={{ marginLeft: 20 }}
+                activeOpacity={1}
+                onPress={() => router.push("/money")}
+              >
                 <QrCode color="white" size={24} />
               </TouchableOpacity>
             </View>
           </View>
 
-          {/* Scanner Frame */}
           <View style={styles.scannerFrameContainer}>
             <View style={styles.scannerFrame}>
-              {/* Corners */}
               <View style={[styles.corner, styles.cornerTopLeft]} />
               <View style={[styles.corner, styles.cornerTopRight]} />
               <View style={[styles.corner, styles.cornerBottomLeft]} />
@@ -75,7 +99,6 @@ export default function PayScreen() {
             </View>
           </View>
 
-          {/* Bottom Section */}
           <View style={styles.bottomSection}>
             <TouchableOpacity style={styles.uploadButton}>
               <ImageIcon color="white" size={20} style={{ marginRight: 8 }} />
@@ -89,6 +112,7 @@ export default function PayScreen() {
     </View>
   );
 
+  // Rest of your component remains the same
   const renderSendTab = () => (
     <View style={styles.sendContainer}>
       <Text
@@ -127,6 +151,8 @@ export default function PayScreen() {
     </SafeAreaView>
   );
 }
+
+// Styles remain the same
 
 const styles = StyleSheet.create({
   safeArea: {
