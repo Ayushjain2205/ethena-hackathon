@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { ArrowLeft, MoreVertical } from "lucide-react-native";
 import LottieView from "lottie-react-native";
+import { useFonts } from "expo-font";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const CARD_WIDTH = (SCREEN_WIDTH - 48) / 2;
@@ -55,8 +56,12 @@ const ScratchCardOverlay: React.FC<ScratchCardProps> = ({
         <View style={styles.cardContent}>
           {revealed ? (
             <>
-              <Text style={styles.rewardAmount}>${amount.toFixed(2)}</Text>
-              <Text style={styles.rewardDetails}>{details}</Text>
+              <Text style={[styles.rewardAmount, styles.fontBricolage]}>
+                ${amount.toFixed(2)}
+              </Text>
+              <Text style={[styles.rewardDetails, styles.fontBricolage]}>
+                {details}
+              </Text>
             </>
           ) : (
             <Text style={styles.giftEmoji}>🎁</Text>
@@ -73,7 +78,9 @@ const ScratchCardOverlay: React.FC<ScratchCardProps> = ({
       </View>
       {!revealed && (
         <TouchableOpacity style={styles.revealButton} onPress={handleReveal}>
-          <Text style={styles.revealButtonText}>Reveal Reward</Text>
+          <Text style={[styles.revealButtonText, styles.fontBricolage]}>
+            Reveal Reward
+          </Text>
         </TouchableOpacity>
       )}
     </View>
@@ -81,6 +88,10 @@ const ScratchCardOverlay: React.FC<ScratchCardProps> = ({
 };
 
 export default function Rewards() {
+  const [fontsLoaded] = useFonts({
+    Bricolage: require("../../assets/fonts/BricolageGrotesque-Regular.ttf"),
+  });
+
   const [totalRewards, setTotalRewards] = useState(469);
   const [showScratchCard, setShowScratchCard] = useState(false);
   const [scratchedCards, setScratchedCards] = useState<boolean[]>(
@@ -120,6 +131,10 @@ export default function Rewards() {
     }
   };
 
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -128,7 +143,9 @@ export default function Rewards() {
           <TouchableOpacity style={styles.headerButton}>
             <ArrowLeft color="#9333EA" size={24} />
           </TouchableOpacity>
-          <Text style={styles.totalRewards}>${totalRewards} total rewards</Text>
+          <Text style={[styles.totalRewards, styles.fontBricolage]}>
+            ${totalRewards} total rewards
+          </Text>
           <TouchableOpacity style={styles.headerButton}>
             <MoreVertical color="#9333EA" size={24} />
           </TouchableOpacity>
@@ -151,14 +168,20 @@ export default function Rewards() {
                 },
               ]}
             >
-              {index === 4 && <Text style={styles.streakText}>5</Text>}
-              {index === 5 && <Text style={styles.streakText}>6</Text>}
+              {index === 4 && (
+                <Text style={[styles.streakText, styles.fontBricolage]}>5</Text>
+              )}
+              {index === 5 && (
+                <Text style={[styles.streakText, styles.fontBricolage]}>6</Text>
+              )}
             </View>
           ))}
         </View>
 
         {/* Reward Cards */}
-        <Text style={styles.rewardsTitle}>Your rewards</Text>
+        <Text style={[styles.rewardsTitle, styles.fontBricolage]}>
+          Your rewards
+        </Text>
 
         <View style={styles.cardsContainer}>
           {cardAmounts.map((amount, index) => (
@@ -178,8 +201,12 @@ export default function Rewards() {
               >
                 {scratchedCards[index] ? (
                   <>
-                    <Text style={styles.cardAmount}>${amount.toFixed(2)}</Text>
-                    <Text style={styles.cardDetails}>{cardDetails[index]}</Text>
+                    <Text style={[styles.cardAmount, styles.fontBricolage]}>
+                      ${amount.toFixed(2)}
+                    </Text>
+                    <Text style={[styles.cardDetails, styles.fontBricolage]}>
+                      {cardDetails[index]}
+                    </Text>
                   </>
                 ) : (
                   <Text style={styles.giftEmoji}>🎁</Text>
@@ -313,13 +340,13 @@ const styles = StyleSheet.create({
   overlayCard: {
     width: SCREEN_WIDTH * 0.8,
     aspectRatio: 1,
-    backgroundColor: "rgba(147, 51, 234, 0.9)", // Darkened background
+    backgroundColor: "rgba(147, 51, 234, 0.9)",
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
     overflow: "hidden",
     borderWidth: 2,
-    borderColor: "rgba(255, 255, 255, 0.3)", // Lighter border for contrast
+    borderColor: "rgba(255, 255, 255, 0.3)",
   },
   cardContent: {
     position: "absolute",
@@ -363,5 +390,8 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  fontBricolage: {
+    fontFamily: "Bricolage",
   },
 });
