@@ -2,171 +2,335 @@ import React from "react";
 import {
   View,
   Text,
-  Image,
-  ScrollView,
   TouchableOpacity,
   SafeAreaView,
+  ScrollView,
+  Image,
+  Dimensions,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import {
-  Bell,
-  Plus,
-  Send,
-  Wallet,
-  Home,
-  Scan,
-  CreditCard,
+  ArrowUpRight,
+  Receipt,
+  Smartphone,
   Grid,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react-native";
-import "nativewind";
+import { LineChart } from "react-native-chart-kit";
 
-export default function BankScreen() {
+const SCREEN_WIDTH = Dimensions.get("window").width;
+
+const chartData = {
+  labels: ["", "", "", "", "", ""],
+  datasets: [
+    {
+      data: [180, 220, 290, 250, 300, 283.72],
+      color: (opacity = 1) => `rgba(147, 51, 234, ${opacity})`,
+    },
+  ],
+};
+
+export default function Home() {
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView className="flex-1">
-        {/* Header - Using bold weight for greeting and regular for subtitle */}
-        <View className="flex-row justify-between items-center px-4 pt-2">
-          <View className="flex-row items-center space-x-3">
-            <Image
-              source={{ uri: "https://via.placeholder.com/40" }}
-              className="w-10 h-10 rounded-full"
-            />
-            <View>
-              {/* Using bold for main greeting */}
-              <Text className="text-2xl font-bold font-sans">
-                Morning Jude,
-              </Text>
-              {/* Using regular weight for secondary text */}
-              <Text className="text-gray-500 font-sans font-normal">
-                Free Account
-              </Text>
-            </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+      <ScrollView>
+        {/* Header */}
+        <View
+          style={{
+            padding: 20,
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <View>
+            <Text style={{ fontSize: 16, color: "#666" }}>Hi Rahul,</Text>
+            <Text style={{ fontSize: 24, fontWeight: "bold", color: "#333" }}>
+              Welcome back
+            </Text>
           </View>
           <TouchableOpacity>
-            <Bell size={24} color="#000" />
+            <Image
+              source={{ uri: "https://via.placeholder.com/40" }}
+              style={{ width: 40, height: 40, borderRadius: 20 }}
+            />
           </TouchableOpacity>
         </View>
 
-        {/* Card Section - Using medium weight for card numbers */}
-        <View className="px-4 py-6">
-          <View className="rounded-lg overflow-hidden shadow-lg">
-            <LinearGradient
-              colors={["#FF4B2B", "#FF416C", "#A445B2"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
+        {/* Balance Card */}
+        <View
+          style={{
+            margin: 20,
+            padding: 20,
+            backgroundColor: "#9333EA",
+            borderRadius: 20,
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ color: "rgba(255,255,255,0.8)", fontSize: 16 }}>
+              Your Balance is
+            </Text>
+            <TouchableOpacity
+              style={{
+                backgroundColor: "rgba(255,255,255,0.2)",
+                paddingHorizontal: 12,
+                paddingVertical: 6,
+                borderRadius: 20,
+                flexDirection: "row",
+                alignItems: "center",
+              }}
             >
-              <View className="p-6">
-                <View className="h-48 justify-between">
-                  <Image
-                    source={{ uri: "https://via.placeholder.com/30" }}
-                    className="w-8 h-8"
-                  />
-                  <View>
-                    {/* Using medium weight for card number */}
-                    <Text className="text-white text-xl tracking-wider font-sans font-medium">
-                      2781 8191 6671 3190
-                    </Text>
-                    <View className="flex-row justify-between mt-4">
-                      {/* Using regular weight for card details */}
-                      <Text className="text-white font-sans font-normal">
-                        Jude Kylian Jr.
-                      </Text>
-                      <Text className="text-white font-sans font-normal">
-                        Exp 09/29
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-              </View>
-            </LinearGradient>
+              <Text style={{ color: "white", marginRight: 4 }}>Withdraw</Text>
+              <ArrowUpRight size={16} color="white" />
+            </TouchableOpacity>
+          </View>
+          <Text
+            style={{
+              color: "white",
+              fontSize: 36,
+              fontWeight: "bold",
+              marginVertical: 8,
+            }}
+          >
+            $45,934.00
+          </Text>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <ArrowUp size={16} color="#22C55E" />
+            <Text style={{ color: "#22C55E", marginLeft: 4 }}>8.82% </Text>
+            <Text style={{ color: "rgba(255,255,255,0.8)" }}>(+$876)</Text>
           </View>
         </View>
 
-        {/* Action Buttons - Using medium weight for button labels */}
-        <View className="flex-row justify-around px-4 py-2">
+        {/* Quick Actions */}
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginHorizontal: 20,
+            marginBottom: 20,
+          }}
+        >
           {[
-            { icon: <Plus size={24} color="#FF416C" />, label: "Add" },
-            { icon: <Send size={24} color="#FF416C" />, label: "Send" },
-            { icon: <Wallet size={24} color="#FF416C" />, label: "Pay" },
+            { icon: ArrowUpRight, label: "Send", color: "#22C55E" },
+            { icon: Receipt, label: "Bill", color: "#EAB308" },
+            { icon: Smartphone, label: "Mobile", color: "#9333EA" },
+            { icon: Grid, label: "All", color: "#F97316" },
           ].map((item, index) => (
             <TouchableOpacity
               key={index}
-              className="bg-white px-6 py-3 rounded-full shadow-sm flex-row items-center space-x-2"
+              style={{
+                backgroundColor: `${item.color}20`,
+                padding: 16,
+                borderRadius: 16,
+                alignItems: "center",
+                width: (SCREEN_WIDTH - 100) / 4,
+              }}
             >
-              {item.icon}
-              {/* Using medium weight for action buttons */}
-              <Text className="text-gray-800 font-sans font-medium">
+              <item.icon size={24} color={item.color} />
+              <Text style={{ color: item.color, marginTop: 4, fontSize: 12 }}>
                 {item.label}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        {/* Recent Transactions - Using semibold for section title */}
-        <View className="px-4 py-6">
-          <View className="flex-row justify-between items-center mb-4">
-            <Text className="text-xl font-semibold font-sans">
-              Recent Transaction
+        {/* Stats Cards */}
+        <View
+          style={{
+            flexDirection: "row",
+            marginHorizontal: 20,
+            marginBottom: 20,
+          }}
+        >
+          {/* Notion Card */}
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: "white",
+              borderRadius: 20,
+              padding: 16,
+              marginRight: 10,
+              borderWidth: 1,
+              borderColor: "rgba(147, 51, 234, 0.1)",
+            }}
+          >
+            <Text style={{ fontSize: 16, color: "#333", marginBottom: 8 }}>
+              Notion
             </Text>
-            {/* Using medium weight for action link */}
-            <Text className="text-pink-500 font-sans font-medium">
-              View All
+            <LineChart
+              data={chartData}
+              width={140}
+              height={100}
+              chartConfig={{
+                backgroundGradientFrom: "white",
+                backgroundGradientTo: "white",
+                color: (opacity = 1) => `rgba(147, 51, 234, ${opacity})`,
+                strokeWidth: 2,
+                propsForDots: {
+                  r: "0",
+                },
+              }}
+              bezier
+              withHorizontalLabels={false}
+              withVerticalLabels={false}
+              withDots={false}
+              style={{ paddingRight: 0 }}
+            />
+            <Text style={{ fontSize: 20, fontWeight: "bold", color: "#333" }}>
+              $283.72
             </Text>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <ArrowUp size={16} color="#22C55E" />
+              <Text style={{ color: "#22C55E", marginLeft: 4 }}>+1.7%</Text>
+            </View>
           </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {["Thibaut", "David", "Antoni", "Fade", "Lucas"].map(
-              (name, index) => (
-                <View key={index} className="items-center mr-6">
-                  <Image
-                    source={{ uri: `https://via.placeholder.com/50` }}
-                    className="w-12 h-12 rounded-full mb-1"
-                  />
-                  {/* Using light weight for names */}
-                  <Text className="text-gray-600 font-sans font-light">
-                    {name}
+
+          {/* Goals Card */}
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: "white",
+              borderRadius: 20,
+              padding: 16,
+              marginLeft: 10,
+              borderWidth: 1,
+              borderColor: "rgba(147, 51, 234, 0.1)",
+            }}
+          >
+            <Text style={{ fontSize: 16, color: "#333", marginBottom: 8 }}>
+              Goals Achieved
+            </Text>
+            <View style={{ flex: 1, justifyContent: "center" }}>
+              <Text
+                style={{
+                  fontSize: 32,
+                  fontWeight: "bold",
+                  color: "#333",
+                  marginBottom: 8,
+                }}
+              >
+                68%
+              </Text>
+              <View
+                style={{
+                  height: 4,
+                  backgroundColor: "rgba(147, 51, 234, 0.1)",
+                  borderRadius: 2,
+                }}
+              >
+                <View
+                  style={{
+                    width: "68%",
+                    height: "100%",
+                    backgroundColor: "#9333EA",
+                    borderRadius: 2,
+                  }}
+                />
+              </View>
+            </View>
+          </View>
+        </View>
+
+        {/* Transactions */}
+        <View style={{ marginHorizontal: 20 }}>
+          <Text
+            style={{
+              fontSize: 20,
+              fontWeight: "bold",
+              color: "#333",
+              marginBottom: 16,
+            }}
+          >
+            Transactions
+          </Text>
+          {[
+            {
+              name: "Google",
+              date: "Nov 8, 16:32",
+              amount: 190.54,
+              change: 2.5,
+              icon: "🔍",
+              positive: true,
+            },
+            {
+              name: "Apple",
+              date: "Nov 5, 8:12",
+              amount: 75.0,
+              change: 2.5,
+              icon: "🍎",
+              positive: false,
+            },
+          ].map((transaction, index) => (
+            <View
+              key={index}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                padding: 16,
+                backgroundColor: "white",
+                borderRadius: 16,
+                marginBottom: 12,
+                borderWidth: 1,
+                borderColor: "rgba(147, 51, 234, 0.1)",
+              }}
+            >
+              <View
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 12,
+                  backgroundColor: "#9333EA20",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginRight: 12,
+                }}
+              >
+                <Text style={{ fontSize: 20 }}>{transaction.icon}</Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{ fontSize: 16, fontWeight: "600", color: "#333" }}
+                >
+                  {transaction.name}
+                </Text>
+                <Text style={{ fontSize: 14, color: "#666" }}>
+                  {transaction.date}
+                </Text>
+              </View>
+              <View style={{ alignItems: "flex-end" }}>
+                <Text
+                  style={{ fontSize: 16, fontWeight: "600", color: "#333" }}
+                >
+                  {transaction.positive ? "+" : "-"}$
+                  {transaction.amount.toFixed(2)}
+                </Text>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  {transaction.positive ? (
+                    <ArrowUp size={12} color="#22C55E" />
+                  ) : (
+                    <ArrowDown size={12} color="#EF4444" />
+                  )}
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      color: transaction.positive ? "#22C55E" : "#EF4444",
+                      marginLeft: 2,
+                    }}
+                  >
+                    {transaction.change}%
                   </Text>
                 </View>
-              )
-            )}
-          </ScrollView>
-        </View>
-
-        {/* Card Details - Using varying weights for different text elements */}
-        <View className="px-4 py-2">
-          <View className="flex-row justify-between items-center mb-4">
-            <Text className="text-xl font-light ">Card Detail</Text>
-            <Text className="text-pink-500 font-sans font-medium">Show</Text>
-          </View>
-          <View className="space-y-4">
-            <View className="flex-row justify-between">
-              {/* Using light weight for labels */}
-              <Text className="text-gray-500 font-bold">Holder Name</Text>
-              {/* Using normal weight for values */}
-              <Text className="font-sans font-normal">Jude Kylian Jr</Text>
+              </View>
             </View>
-            <View className="flex-row justify-between">
-              <Text className="text-gray-500 font-sans font-light">
-                Card Number
-              </Text>
-              <Text className="font-sans font-normal">2781 8191 6671 3190</Text>
-            </View>
-          </View>
+          ))}
         </View>
       </ScrollView>
-
-      {/* Bottom Navigation remains unchanged */}
-      <View className="flex-row justify-around py-4 bg-white border-t border-gray-100">
-        {[
-          { icon: <Home size={24} color="#FF416C" /> },
-          { icon: <Scan size={24} color="#666" /> },
-          { icon: <CreditCard size={24} color="#666" /> },
-          { icon: <Grid size={24} color="#666" /> },
-        ].map((item, index) => (
-          <TouchableOpacity key={index} className="p-2">
-            {item.icon}
-          </TouchableOpacity>
-        ))}
-      </View>
     </SafeAreaView>
   );
 }
