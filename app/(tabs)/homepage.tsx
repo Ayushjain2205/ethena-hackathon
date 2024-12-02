@@ -10,13 +10,17 @@ import {
 } from "react-native";
 import {
   ArrowUpRight,
+  ArrowDownLeft,
   Receipt,
   Smartphone,
   Grid,
   ArrowUp,
   ArrowDown,
+  Plus,
+  Minus,
 } from "lucide-react-native";
 import { LineChart } from "react-native-chart-kit";
+import { LinearGradient } from "expo-linear-gradient";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
@@ -32,108 +36,92 @@ const chartData = {
 
 export default function Home() {
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+    <SafeAreaView className="flex-1 bg-gray-50">
       <ScrollView>
         {/* Header */}
-        <View
-          style={{
-            padding: 20,
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
+        <View className="p-5 flex-row justify-between items-center">
           <View>
-            <Text style={{ fontSize: 16, color: "#666" }}>Hi Rahul,</Text>
-            <Text style={{ fontSize: 24, fontWeight: "bold", color: "#333" }}>
+            <Text className="text-base text-gray-600 font-sans">Hi Rahul,</Text>
+            <Text className="text-2xl font-semibold text-gray-800 font-sans">
               Welcome back
             </Text>
           </View>
           <TouchableOpacity>
             <Image
               source={{ uri: "https://via.placeholder.com/40" }}
-              style={{ width: 40, height: 40, borderRadius: 20 }}
+              className="w-10 h-10 rounded-full"
             />
           </TouchableOpacity>
         </View>
 
         {/* Balance Card */}
-        <View
-          style={{
-            margin: 20,
-            padding: 20,
-            backgroundColor: "#9333EA",
-            borderRadius: 20,
-          }}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Text style={{ color: "rgba(255,255,255,0.8)", fontSize: 16 }}>
+        <View className="mx-5 bg-purple-600 rounded-3xl overflow-hidden">
+          <View className="p-6">
+            <Text className="text-white/90 text-lg font-sans mb-2">
               Your Balance is
             </Text>
-            <TouchableOpacity
-              style={{
-                backgroundColor: "rgba(255,255,255,0.2)",
-                paddingHorizontal: 12,
-                paddingVertical: 6,
-                borderRadius: 20,
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-            >
-              <Text style={{ color: "white", marginRight: 4 }}>Withdraw</Text>
-              <ArrowUpRight size={16} color="white" />
-            </TouchableOpacity>
+            <Text className="text-white text-4xl font-semibold font-sans mb-2">
+              $45,934.00
+            </Text>
+            <View className="flex-row items-center">
+              <ArrowUp size={16} color="#4ADE80" strokeWidth={2.5} />
+              <Text className="text-[#4ADE80] ml-1 text-sm font-sans">
+                8.82%{" "}
+              </Text>
+              <Text className="text-white/80 text-sm font-sans">(+$876)</Text>
+            </View>
           </View>
-          <Text
-            style={{
-              color: "white",
-              fontSize: 36,
-              fontWeight: "bold",
-              marginVertical: 8,
-            }}
-          >
-            $45,934.00
-          </Text>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <ArrowUp size={16} color="#22C55E" />
-            <Text style={{ color: "#22C55E", marginLeft: 4 }}>8.82% </Text>
-            <Text style={{ color: "rgba(255,255,255,0.8)" }}>(+$876)</Text>
+          <View className="flex-row bg-purple-700">
+            <TouchableOpacity className="flex-1 py-3 items-center justify-center flex-row">
+              <ArrowDownLeft size={18} color="white" />
+              <Text className="text-white font-sans ml-2 text-sm">Deposit</Text>
+            </TouchableOpacity>
+            <View className="w-px bg-purple-500" />
+            <TouchableOpacity className="flex-1 py-3 items-center justify-center flex-row">
+              <ArrowUpRight size={18} color="white" />
+              <Text className="text-white font-sans ml-2 text-sm">
+                Withdraw
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
 
         {/* Quick Actions */}
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            marginHorizontal: 20,
-            marginBottom: 20,
-          }}
-        >
+        <View className="flex-row justify-between mx-5 my-6">
           {[
-            { icon: ArrowUpRight, label: "Send", color: "#22C55E" },
-            { icon: Receipt, label: "Bill", color: "#EAB308" },
-            { icon: Smartphone, label: "Mobile", color: "#9333EA" },
-            { icon: Grid, label: "All", color: "#F97316" },
+            {
+              icon: ArrowUpRight,
+              label: "Send",
+              color: "text-green-500",
+              bgColor: "bg-green-100",
+            },
+            {
+              icon: Receipt,
+              label: "Bill",
+              color: "text-yellow-500",
+              bgColor: "bg-yellow-100",
+            },
+            {
+              icon: Smartphone,
+              label: "Mobile",
+              color: "text-purple-600",
+              bgColor: "bg-purple-100",
+            },
+            {
+              icon: Grid,
+              label: "All",
+              color: "text-orange-500",
+              bgColor: "bg-orange-100",
+            },
           ].map((item, index) => (
             <TouchableOpacity
               key={index}
-              style={{
-                backgroundColor: `${item.color}20`,
-                padding: 16,
-                borderRadius: 16,
-                alignItems: "center",
-                width: (SCREEN_WIDTH - 100) / 4,
-              }}
+              className={`${item.bgColor} p-4 rounded-2xl items-center justify-center w-[23%] aspect-square`}
             >
-              <item.icon size={24} color={item.color} />
-              <Text style={{ color: item.color, marginTop: 4, fontSize: 12 }}>
+              <item.icon size={24} className={item.color} />
+              <Text
+                className={`${item.color} mt-2 text-xs font-sans font-medium`}
+              >
                 {item.label}
               </Text>
             </TouchableOpacity>
@@ -141,27 +129,11 @@ export default function Home() {
         </View>
 
         {/* Stats Cards */}
-        <View
-          style={{
-            flexDirection: "row",
-            marginHorizontal: 20,
-            marginBottom: 20,
-          }}
-        >
-          {/* Notion Card */}
-          <View
-            style={{
-              flex: 1,
-              backgroundColor: "white",
-              borderRadius: 20,
-              padding: 16,
-              marginRight: 10,
-              borderWidth: 1,
-              borderColor: "rgba(147, 51, 234, 0.1)",
-            }}
-          >
-            <Text style={{ fontSize: 16, color: "#333", marginBottom: 8 }}>
-              Notion
+        <View className="flex-row mx-5 mb-5">
+          {/* Portfolio Growth Card */}
+          <View className="flex-1 bg-white rounded-2xl p-4 mr-2.5 shadow">
+            <Text className="text-base text-gray-800 mb-2 font-sans">
+              Portfolio Growth
             </Text>
             <LineChart
               data={chartData}
@@ -182,146 +154,86 @@ export default function Home() {
               withDots={false}
               style={{ paddingRight: 0 }}
             />
-            <Text style={{ fontSize: 20, fontWeight: "bold", color: "#333" }}>
+            <Text className="text-xl font-semibold text-gray-800 font-sans">
               $283.72
             </Text>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View className="flex-row items-center">
               <ArrowUp size={16} color="#22C55E" />
-              <Text style={{ color: "#22C55E", marginLeft: 4 }}>+1.7%</Text>
+              <Text className="text-green-500 ml-1 font-sans">+1.7%</Text>
             </View>
           </View>
 
-          {/* Goals Card */}
-          <View
-            style={{
-              flex: 1,
-              backgroundColor: "white",
-              borderRadius: 20,
-              padding: 16,
-              marginLeft: 10,
-              borderWidth: 1,
-              borderColor: "rgba(147, 51, 234, 0.1)",
-            }}
-          >
-            <Text style={{ fontSize: 16, color: "#333", marginBottom: 8 }}>
-              Goals Achieved
+          {/* Yield Earned Card */}
+          <View className="flex-1 bg-white rounded-2xl p-4 ml-2.5 shadow">
+            <Text className="text-base text-gray-800 mb-2 font-sans">
+              Yield Earned
             </Text>
-            <View style={{ flex: 1, justifyContent: "center" }}>
-              <Text
-                style={{
-                  fontSize: 32,
-                  fontWeight: "bold",
-                  color: "#333",
-                  marginBottom: 8,
-                }}
-              >
-                68%
+            <View className="flex-1 justify-center">
+              <Text className="text-3xl font-semibold text-gray-800 mb-2 font-sans">
+                $892.50
               </Text>
-              <View
-                style={{
-                  height: 4,
-                  backgroundColor: "rgba(147, 51, 234, 0.1)",
-                  borderRadius: 2,
-                }}
-              >
-                <View
-                  style={{
-                    width: "68%",
-                    height: "100%",
-                    backgroundColor: "#9333EA",
-                    borderRadius: 2,
-                  }}
-                />
+              <View className="h-1 bg-purple-600/10 rounded">
+                <View className="w-[68%] h-full bg-purple-600 rounded" />
               </View>
             </View>
           </View>
         </View>
 
         {/* Transactions */}
-        <View style={{ marginHorizontal: 20 }}>
-          <Text
-            style={{
-              fontSize: 20,
-              fontWeight: "bold",
-              color: "#333",
-              marginBottom: 16,
-            }}
-          >
+        <View className="mx-5">
+          <Text className="text-xl font-semibold text-gray-800 mb-4 font-sans">
             Transactions
           </Text>
           {[
             {
-              name: "Google",
+              name: "Sarah Johnson",
               date: "Nov 8, 16:32",
               amount: 190.54,
               change: 2.5,
-              icon: "🔍",
-              positive: true,
+              icon: "👩🏻",
+              type: "Sent to",
+              positive: false,
             },
             {
-              name: "Apple",
+              name: "Michael Chen",
               date: "Nov 5, 8:12",
               amount: 75.0,
               change: 2.5,
-              icon: "🍎",
-              positive: false,
+              icon: "👨🏻‍💼",
+              type: "Received from",
+              positive: true,
             },
           ].map((transaction, index) => (
             <View
               key={index}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                padding: 16,
-                backgroundColor: "white",
-                borderRadius: 16,
-                marginBottom: 12,
-                borderWidth: 1,
-                borderColor: "rgba(147, 51, 234, 0.1)",
-              }}
+              className="flex-row items-center p-4 bg-white rounded-xl mb-3 shadow"
             >
-              <View
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 12,
-                  backgroundColor: "#9333EA20",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginRight: 12,
-                }}
-              >
-                <Text style={{ fontSize: 20 }}>{transaction.icon}</Text>
+              <View className="w-10 h-10 rounded-full bg-purple-100 justify-center items-center mr-3">
+                <Text className="text-xl">{transaction.icon}</Text>
               </View>
-              <View style={{ flex: 1 }}>
-                <Text
-                  style={{ fontSize: 16, fontWeight: "600", color: "#333" }}
-                >
-                  {transaction.name}
+              <View className="flex-1">
+                <Text className="text-base font-semibold text-gray-800 font-sans">
+                  {transaction.type} {transaction.name}
                 </Text>
-                <Text style={{ fontSize: 14, color: "#666" }}>
+                <Text className="text-sm text-gray-600 font-sans">
                   {transaction.date}
                 </Text>
               </View>
-              <View style={{ alignItems: "flex-end" }}>
-                <Text
-                  style={{ fontSize: 16, fontWeight: "600", color: "#333" }}
-                >
+              <View className="items-end">
+                <Text className="text-base font-semibold text-gray-800 font-sans">
                   {transaction.positive ? "+" : "-"}$
                   {transaction.amount.toFixed(2)}
                 </Text>
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <View className="flex-row items-center">
                   {transaction.positive ? (
-                    <ArrowUp size={12} color="#22C55E" />
+                    <ArrowDown size={12} color="#22C55E" />
                   ) : (
-                    <ArrowDown size={12} color="#EF4444" />
+                    <ArrowUp size={12} color="#EF4444" />
                   )}
                   <Text
-                    style={{
-                      fontSize: 14,
-                      color: transaction.positive ? "#22C55E" : "#EF4444",
-                      marginLeft: 2,
-                    }}
+                    className={`text-sm ml-0.5 font-sans ${
+                      transaction.positive ? "text-green-500" : "text-red-500"
+                    }`}
                   >
                     {transaction.change}%
                   </Text>
