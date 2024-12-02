@@ -14,23 +14,23 @@ const transactions = [
     id: "1",
     merchant: "Starbucks",
     logo: "☕️",
-    date: "Dec 2, 2023",
+    date: "Dec 1, 2024",
     amount: 11.0,
     location: "New York, NY",
   },
   {
     id: "2",
-    merchant: "May's",
-    logo: "🛍",
-    date: "Dec 1, 2023",
+    merchant: "Amazon",
+    logo: "📦",
+    date: "Nov 30, 2024",
     amount: 316.0,
-    location: "Brooklyn, NY",
+    location: "Online",
   },
   {
     id: "3",
     merchant: "Walmart",
     logo: "🏪",
-    date: "Nov 30, 2023",
+    date: "Nov 29, 2024",
     amount: 327.0,
     location: "Queens, NY",
   },
@@ -94,15 +94,12 @@ export default function Card() {
               </View>
               <View>
                 <Text className="text-base font-semibold text-gray-800 font-sans">
-                  Upcoming Due
+                  Due Payments
                 </Text>
                 <Text className="text-sm text-gray-600 font-sans">
                   3 Payments
                 </Text>
               </View>
-            </View>
-            <View className="bg-purple-50 px-3 py-1 rounded-full">
-              <Text className="text-purple-600 font-sans">May's</Text>
             </View>
           </View>
 
@@ -150,12 +147,9 @@ export default function Card() {
         {/* Transactions */}
         <View className="mx-5">
           <View className="flex-row justify-between mb-4">
-            <TouchableOpacity className="bg-purple-600 px-4 py-2 rounded-full">
-              <Text className="text-white font-sans">Upcoming</Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="bg-white px-4 py-2 rounded-full">
-              <Text className="text-gray-600 font-sans">All orders</Text>
-            </TouchableOpacity>
+            <Text className="text-xl font-semibold text-gray-800 font-sans">
+              All Payments
+            </Text>
           </View>
 
           {transactions.map((transaction) => (
