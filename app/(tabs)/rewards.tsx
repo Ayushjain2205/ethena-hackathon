@@ -19,12 +19,14 @@ interface ScratchCardProps {
   onReveal: (amount: number) => void;
   onClose: () => void;
   amount: number;
+  details: string;
 }
 
 const ScratchCardOverlay: React.FC<ScratchCardProps> = ({
   onReveal,
   onClose,
   amount,
+  details,
 }) => {
   const [revealed, setRevealed] = useState(false);
   const confettiRef = useRef<LottieView>(null);
@@ -52,7 +54,10 @@ const ScratchCardOverlay: React.FC<ScratchCardProps> = ({
       <View style={styles.overlayCard}>
         <View style={styles.cardContent}>
           {revealed ? (
-            <Text style={styles.rewardAmount}>${amount.toFixed(2)}</Text>
+            <>
+              <Text style={styles.rewardAmount}>${amount.toFixed(2)}</Text>
+              <Text style={styles.rewardDetails}>{details}</Text>
+            </>
           ) : (
             <Text style={styles.giftEmoji}>🎁</Text>
           )}
@@ -86,6 +91,14 @@ export default function Rewards() {
       .fill(0)
       .map(() => Math.floor(Math.random() * 10) + 1)
   );
+  const [cardDetails, setCardDetails] = useState<string[]>([
+    "2 days ago • Grocery Store",
+    "1 week ago • Online Shopping",
+    "3 days ago • Gas Station",
+    "5 days ago • Restaurant",
+    "1 day ago • Pharmacy",
+    "4 days ago • Electronics Store",
+  ]);
   const [selectedCardIndex, setSelectedCardIndex] = useState<number | null>(
     null
   );
@@ -113,11 +126,11 @@ export default function Rewards() {
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity style={styles.headerButton}>
-            <ArrowLeft color="white" size={24} />
+            <ArrowLeft color="#9333EA" size={24} />
           </TouchableOpacity>
           <Text style={styles.totalRewards}>${totalRewards} total rewards</Text>
           <TouchableOpacity style={styles.headerButton}>
-            <MoreVertical color="white" size={24} />
+            <MoreVertical color="#9333EA" size={24} />
           </TouchableOpacity>
         </View>
 
@@ -134,7 +147,7 @@ export default function Rewards() {
                       ? "#22C55E"
                       : index === 5
                       ? "#F59E0B"
-                      : "rgba(255, 255, 255, 0.2)",
+                      : "rgba(147, 51, 234, 0.2)",
                 },
               ]}
             >
@@ -164,7 +177,10 @@ export default function Rewards() {
                 ]}
               >
                 {scratchedCards[index] ? (
-                  <Text style={styles.cardAmount}>${amount.toFixed(2)}</Text>
+                  <>
+                    <Text style={styles.cardAmount}>${amount.toFixed(2)}</Text>
+                    <Text style={styles.cardDetails}>{cardDetails[index]}</Text>
+                  </>
                 ) : (
                   <Text style={styles.giftEmoji}>🎁</Text>
                 )}
@@ -182,6 +198,9 @@ export default function Rewards() {
           amount={
             selectedCardIndex !== null ? cardAmounts[selectedCardIndex] : 0
           }
+          details={
+            selectedCardIndex !== null ? cardDetails[selectedCardIndex] : ""
+          }
         />
       </Modal>
     </SafeAreaView>
@@ -191,7 +210,7 @@ export default function Rewards() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#9333EA",
+    backgroundColor: "white",
   },
   scrollContent: {
     flexGrow: 1,
@@ -208,12 +227,12 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    backgroundColor: "rgba(147, 51, 234, 0.1)",
     justifyContent: "center",
     alignItems: "center",
   },
   totalRewards: {
-    color: "white",
+    color: "#9333EA",
     fontSize: 20,
     fontWeight: "600",
   },
@@ -237,7 +256,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   rewardsTitle: {
-    color: "white",
+    color: "#9333EA",
     fontSize: 24,
     fontWeight: "bold",
     marginLeft: 16,
@@ -260,35 +279,47 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "rgba(147, 51, 234, 0.3)",
   },
   unscratchedCard: {
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    backgroundColor: "rgba(147, 51, 234, 0.15)",
   },
   scratchedCard: {
-    backgroundColor: "rgba(255, 255, 255, 0.3)",
+    backgroundColor: "rgba(147, 51, 234, 0.25)",
   },
   cardAmount: {
-    color: "white",
-    fontSize: 24,
+    color: "#9333EA",
+    fontSize: 22,
     fontWeight: "bold",
+  },
+  cardDetails: {
+    color: "#9333EA",
+    fontSize: 10,
+    textAlign: "center",
+    marginTop: 4,
+    opacity: 0.8,
   },
   giftEmoji: {
     fontSize: 40,
   },
   overlay: {
     flex: 1,
-    backgroundColor: "#9333EA",
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
     justifyContent: "center",
     alignItems: "center",
   },
   overlayCard: {
     width: SCREEN_WIDTH * 0.8,
     aspectRatio: 1,
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    backgroundColor: "rgba(147, 51, 234, 0.9)", // Darkened background
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
     overflow: "hidden",
+    borderWidth: 2,
+    borderColor: "rgba(255, 255, 255, 0.3)", // Lighter border for contrast
   },
   cardContent: {
     position: "absolute",
@@ -302,6 +333,18 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 48,
     fontWeight: "bold",
+    textShadowColor: "rgba(0, 0, 0, 0.3)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
+  },
+  rewardDetails: {
+    color: "white",
+    fontSize: 14,
+    textAlign: "center",
+    marginTop: 8,
+    textShadowColor: "rgba(0, 0, 0, 0.3)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
   },
   confetti: {
     position: "absolute",
@@ -311,7 +354,7 @@ const styles = StyleSheet.create({
   },
   revealButton: {
     marginTop: 20,
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    backgroundColor: "#9333EA",
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 20,
