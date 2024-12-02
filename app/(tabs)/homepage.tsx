@@ -7,6 +7,7 @@ import {
   ScrollView,
   Image,
   Dimensions,
+  StyleSheet,
 } from "react-native";
 import {
   ArrowUpRight,
@@ -89,39 +90,24 @@ export default function Home() {
         {/* Quick Actions */}
         <View className="flex-row justify-between mx-5 my-6">
           {[
-            {
-              icon: ArrowUpRight,
-              label: "Send",
-              color: "text-green-500",
-              bgColor: "bg-green-100",
-            },
-            {
-              icon: Receipt,
-              label: "Bill",
-              color: "text-yellow-500",
-              bgColor: "bg-yellow-100",
-            },
-            {
-              icon: Smartphone,
-              label: "Mobile",
-              color: "text-purple-600",
-              bgColor: "bg-purple-100",
-            },
-            {
-              icon: Grid,
-              label: "All",
-              color: "text-orange-500",
-              bgColor: "bg-orange-100",
-            },
+            { icon: ArrowUpRight, label: "Send" },
+            { icon: Receipt, label: "Bill" },
+            { icon: Smartphone, label: "Mobile" },
+            { icon: Grid, label: "All" },
           ].map((item, index) => (
             <TouchableOpacity
               key={index}
-              className={`${item.bgColor} p-4 rounded-2xl items-center justify-center w-[23%] aspect-square`}
+              className="bg-purple-50 p-5 rounded-[24px] items-center justify-center w-[23%] aspect-square"
+              style={{
+                shadowColor: "#7C3AED",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.05,
+                shadowRadius: 8,
+                elevation: 2,
+              }}
             >
-              <item.icon size={24} className={item.color} />
-              <Text
-                className={`${item.color} mt-2 text-xs font-sans font-medium`}
-              >
+              <item.icon size={24} color="#7C3AED" strokeWidth={1.5} />
+              <Text className="text-purple-700 mt-2 text-sm font-sans font-medium">
                 {item.label}
               </Text>
             </TouchableOpacity>
