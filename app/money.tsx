@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,9 +7,12 @@ import {
   Image,
   Modal,
   ActivityIndicator,
+  Alert,
+  Platform,
 } from "react-native";
 import { router } from "expo-router";
 import { ArrowLeft } from "lucide-react-native";
+import * as LocalAuthentication from "expo-local-authentication";
 
 const numPad = [
   ["1", "2", "3"],
@@ -22,6 +25,21 @@ function MoneyScreen() {
   const [amount, setAmount] = useState("0");
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isFaceIDSupported, setIsFaceIDSupported] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const compatible = await LocalAuthentication.hasHardwareAsync();
+      const types =
+        await LocalAuthentication.supportedAuthenticationTypesAsync();
+      setIsFaceIDSupported(
+        compatible &&
+          types.includes(
+            LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION
+          )
+      );
+    })();
+  }, []);
 
   const handleNumberPress = (num: string) => {
     setAmount((prev) => {
@@ -32,12 +50,83 @@ function MoneyScreen() {
     });
   };
 
-  const handlePay = () => {
+  const simulateBiometricAuth = () => {
+    return new Promise((resolve) => {
+      Alert.alert(
+        "Simulated Face ID",
+        "This is a simulated Face ID prompt. In production, this would trigger the actual Face ID.",
+        [
+          {
+            text: "Cancel",
+            onPress: () => resolve(false),
+            style: "cancel",
+          },
+          {
+            text: "Authenticate",
+            onPress: () => resolve(true),
+          },
+        ]
+      );
+    });
+  };
+
+  const handleBiometricAuth = async () => {
+    try {
+      // For development in Expo Go, use simulated authentication
+      const authResult = await simulateBiometricAuth();
+
+      if (authResult) {
+        handlePayment();
+      } else {
+        Alert.alert(
+          "Authentication Cancelled",
+          "You cancelled the authentication. Please try again when ready."
+        );
+      }
+
+      // For production, uncomment the following code and remove the simulation above
+      /*
+      const biometricAuth = await LocalAuthentication.authenticateAsync({
+        promptMessage: `Confirm payment of $${amount} using Face ID`,
+        disableDeviceFallback: true,
+        cancelLabel: 'Cancel',
+      });
+      
+      if (biometricAuth.success) {
+        handlePayment();
+      } else if (biometricAuth.error === 'user_cancel') {
+        Alert.alert('Authentication Cancelled', 'Face ID authentication was cancelled. Please try again.');
+      } else {
+        Alert.alert('Authentication Failed', 'Face ID authentication failed. Please try again.');
+      }
+      */
+    } catch (error) {
+      console.error("Face ID authentication error:", error);
+      Alert.alert(
+        "Error",
+        "There was an error with Face ID authentication. Please try again."
+      );
+    }
+  };
+
+  const handlePayment = () => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
       setShowSuccess(true);
     }, 2000);
+  };
+
+  const handlePay = () => {
+    if (isFaceIDSupported) {
+      handleBiometricAuth();
+    } else {
+      Alert.alert(
+        "Face ID Not Available",
+        "Your device does not support Face ID. Please use an alternative payment method.",
+        [{ text: "OK" }]
+      );
+    }
   };
 
   const handleDone = () => {
@@ -94,7 +183,9 @@ function MoneyScreen() {
           className="bg-white/20 rounded-full px-12 py-4 mt-8"
           onPress={handlePay}
         >
-          <Text className="text-white font-sans text-center text-lg">Pay</Text>
+          <Text className="text-white font-sans text-center text-lg">
+            {isFaceIDSupported ? "Pay " : "Pay"}
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -113,8 +204,8 @@ function MoneyScreen() {
                 </Text>
               </>
             ) : (
-              <View className="items-center ">
-                <Text className="text-7xl text-center">✔️</Text>
+              <View className="items-center">
+                <Text className="text-7xl text-center mb-4">✔️</Text>
                 <Text className="text-2xl font-sans text-center mb-4">
                   Payment Successful!
                 </Text>
