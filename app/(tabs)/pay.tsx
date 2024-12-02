@@ -8,17 +8,43 @@ import {
   SafeAreaView,
   Button,
   Dimensions,
+  FlatList,
+  TextInput,
 } from "react-native";
-import { X, Flashlight, QrCode, Image as ImageIcon } from "lucide-react-native";
+import {
+  X,
+  Flashlight,
+  QrCode,
+  Image as ImageIcon,
+  Search,
+  User,
+} from "lucide-react-native";
 import { router } from "expo-router";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const FRAME_WIDTH = SCREEN_WIDTH * 0.7;
 
+interface Contact {
+  id: string;
+  name: string;
+  alturaId: string;
+  avatar: string;
+}
+
+const contacts: Contact[] = [
+  { id: "1", name: "Rahul", alturaId: "rahul.altura", avatar: "👨🏽‍💼" },
+  { id: "2", name: "Priya", alturaId: "priya.altura", avatar: "👩🏽‍🎓" },
+  { id: "3", name: "Amit", alturaId: "amit.altura", avatar: "👨🏽‍🍳" },
+  { id: "4", name: "Neha", alturaId: "neha.altura", avatar: "👩🏽‍⚕️" },
+  { id: "5", name: "Vikram", alturaId: "vikram.altura", avatar: "👨🏽‍💻" },
+  { id: "6", name: "Anita", alturaId: "anita.altura", avatar: "👩🏽‍🔬" },
+];
+
 export default function PayScreen() {
   const [facing, setFacing] = useState<CameraType>("back");
   const [activeTab, setActiveTab] = useState<"scan" | "send">("scan");
   const [permission, requestPermission] = useCameraPermissions();
+  const [searchQuery, setSearchQuery] = useState("");
 
   if (!permission) {
     return <View />;
@@ -87,17 +113,43 @@ export default function PayScreen() {
     </View>
   );
 
+  const renderContactItem = ({ item }: { item: Contact }) => (
+    <TouchableOpacity
+      style={styles.contactItem}
+      onPress={() => router.push("/money")}
+    >
+      <View style={styles.avatarContainer}>
+        <Text style={styles.avatar}>{item.avatar}</Text>
+      </View>
+      <View style={styles.contactInfo}>
+        <Text style={styles.contactName}>{item.name}</Text>
+        <Text style={styles.contactAlturaId}>{item.alturaId}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+
   const renderSendTab = () => (
     <View style={styles.sendContainer}>
-      <Text
-        className="font-sans text-2xl font-semibold"
-        style={styles.sendTitle}
-      >
-        Send Money
-      </Text>
-      <Text className="font-sans text-sm" style={styles.sendMessage}>
-        This is where you'll implement the send money functionality.
-      </Text>
+      <View style={styles.searchContainer}>
+        <Search color="#9333EA" size={20} style={styles.searchIcon} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search contacts"
+          placeholderTextColor="#9333EA"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+      </View>
+      <FlatList
+        data={contacts.filter(
+          (contact) =>
+            contact.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            contact.alturaId.toLowerCase().includes(searchQuery.toLowerCase())
+        )}
+        renderItem={renderContactItem}
+        keyExtractor={(item) => item.id}
+        style={styles.contactList}
+      />
     </View>
   );
 
@@ -109,7 +161,6 @@ export default function PayScreen() {
           onPress={() => setActiveTab("scan")}
         >
           <Text
-            className="font-sans font-semibold"
             style={[
               styles.tabText,
               { color: activeTab === "scan" ? "#9333EA" : "white" },
@@ -123,7 +174,6 @@ export default function PayScreen() {
           onPress={() => setActiveTab("send")}
         >
           <Text
-            className="font-sans font-semibold"
             style={[
               styles.tabText,
               { color: activeTab === "send" ? "#9333EA" : "white" },
@@ -265,17 +315,60 @@ const styles = StyleSheet.create({
   },
   sendContainer: {
     flex: 1,
+    backgroundColor: "white",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    overflow: "hidden",
+  },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(147, 51, 234, 0.1)",
+    borderRadius: 25,
+    margin: 16,
+    paddingHorizontal: 16,
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    height: 40,
+    color: "#9333EA",
+    fontSize: 16,
+  },
+  contactList: {
+    flex: 1,
+  },
+  contactItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(147, 51, 234, 0.1)",
+  },
+  avatarContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "rgba(147, 51, 234, 0.1)",
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
+    marginRight: 16,
   },
-  sendTitle: {
+  avatar: {
     fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
   },
-  sendMessage: {
-    textAlign: "center",
+  contactInfo: {
+    flex: 1,
+  },
+  contactName: {
     fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  contactAlturaId: {
+    fontSize: 14,
+    color: "#666",
   },
 });
