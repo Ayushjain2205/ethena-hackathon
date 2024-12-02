@@ -20,6 +20,7 @@ import {
   User,
 } from "lucide-react-native";
 import { router } from "expo-router";
+import { useFonts } from "expo-font";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const FRAME_WIDTH = SCREEN_WIDTH * 0.7;
@@ -46,6 +47,14 @@ export default function PayScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const [searchQuery, setSearchQuery] = useState("");
 
+  const [fontsLoaded] = useFonts({
+    Bricolage: require("../../assets/fonts/BricolageGrotesque-Regular.ttf"),
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   if (!permission) {
     return <View />;
   }
@@ -53,7 +62,7 @@ export default function PayScreen() {
   if (!permission.granted) {
     return (
       <View style={styles.container}>
-        <Text style={styles.message}>
+        <Text style={[styles.message, styles.fontBricolage]}>
           We need your permission to show the camera
         </Text>
         <Button onPress={requestPermission} title="grant permission" />
@@ -103,10 +112,16 @@ export default function PayScreen() {
           <View style={styles.bottomSection}>
             <TouchableOpacity style={styles.uploadButton}>
               <ImageIcon color="white" size={20} style={{ marginRight: 8 }} />
-              <Text style={styles.uploadButtonText}>Upload from gallery</Text>
+              <Text style={[styles.uploadButtonText, styles.fontBricolage]}>
+                Upload from gallery
+              </Text>
             </TouchableOpacity>
-            <Text style={styles.scanText}>Scan any QR code to pay</Text>
-            <Text style={styles.paymentText}>Altura Pay • Credit • Debit</Text>
+            <Text style={[styles.scanText, styles.fontBricolage]}>
+              Scan any QR code to pay
+            </Text>
+            <Text style={[styles.paymentText, styles.fontBricolage]}>
+              Altura Pay • Credit • Debit
+            </Text>
           </View>
         </SafeAreaView>
       </CameraView>
@@ -122,8 +137,12 @@ export default function PayScreen() {
         <Text style={styles.avatar}>{item.avatar}</Text>
       </View>
       <View style={styles.contactInfo}>
-        <Text style={styles.contactName}>{item.name}</Text>
-        <Text style={styles.contactAlturaId}>{item.alturaId}</Text>
+        <Text style={[styles.contactName, styles.fontBricolage]}>
+          {item.name}
+        </Text>
+        <Text style={[styles.contactAlturaId, styles.fontBricolage]}>
+          {item.alturaId}
+        </Text>
       </View>
     </TouchableOpacity>
   );
@@ -133,7 +152,7 @@ export default function PayScreen() {
       <View style={styles.searchContainer}>
         <Search color="#9333EA" size={20} style={styles.searchIcon} />
         <TextInput
-          style={styles.searchInput}
+          style={[styles.searchInput, styles.fontBricolage]}
           placeholder="Search contacts"
           placeholderTextColor="#9333EA"
           value={searchQuery}
@@ -163,6 +182,7 @@ export default function PayScreen() {
           <Text
             style={[
               styles.tabText,
+              styles.fontBricolage,
               { color: activeTab === "scan" ? "#9333EA" : "white" },
             ]}
           >
@@ -176,6 +196,7 @@ export default function PayScreen() {
           <Text
             style={[
               styles.tabText,
+              styles.fontBricolage,
               { color: activeTab === "send" ? "#9333EA" : "white" },
             ]}
           >
@@ -370,5 +391,8 @@ const styles = StyleSheet.create({
   contactAlturaId: {
     fontSize: 14,
     color: "#666",
+  },
+  fontBricolage: {
+    fontFamily: "Bricolage",
   },
 });
