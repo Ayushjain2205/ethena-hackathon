@@ -10,6 +10,7 @@ import {
   Dimensions,
 } from "react-native";
 import { X, Flashlight, QrCode, Image as ImageIcon } from "lucide-react-native";
+import { router } from "expo-router";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const FRAME_WIDTH = SCREEN_WIDTH * 0.7;
@@ -18,7 +19,6 @@ export default function PayScreen() {
   const [facing, setFacing] = useState<CameraType>("back");
   const [activeTab, setActiveTab] = useState<"scan" | "send">("scan");
   const [permission, requestPermission] = useCameraPermissions();
-  const [isFlashlightOn, setIsFlashlightOn] = useState(false);
 
   if (!permission) {
     return <View />;
@@ -41,11 +41,7 @@ export default function PayScreen() {
 
   const renderScanTab = () => (
     <View style={styles.container}>
-      <CameraView
-        style={styles.camera}
-        facing={facing}
-        flashMode={isFlashlightOn ? "torch" : "off"}
-      >
+      <CameraView style={styles.camera} facing={facing}>
         {/* Header */}
         <SafeAreaView style={styles.overlay}>
           <View style={styles.header}>
@@ -53,12 +49,14 @@ export default function PayScreen() {
               <X color="white" size={24} />
             </TouchableOpacity>
             <View style={styles.headerIcons}>
-              <TouchableOpacity
-                onPress={() => setIsFlashlightOn(!isFlashlightOn)}
-              >
+              <TouchableOpacity>
                 <Flashlight color="white" size={24} />
               </TouchableOpacity>
-              <TouchableOpacity style={{ marginLeft: 20 }}>
+              <TouchableOpacity
+                style={{ marginLeft: 20 }}
+                onPress={() => router.push("/money")}
+                activeOpacity={1}
+              >
                 <QrCode color="white" size={24} />
               </TouchableOpacity>
             </View>
@@ -188,7 +186,7 @@ const styles = StyleSheet.create({
     left: 0,
     borderTopWidth: 4,
     borderLeftWidth: 4,
-    borderColor: "#FF6B6B",
+    borderColor: "#9333EA",
     borderTopLeftRadius: 12,
   },
   cornerTopRight: {
@@ -196,7 +194,7 @@ const styles = StyleSheet.create({
     right: 0,
     borderTopWidth: 4,
     borderRightWidth: 4,
-    borderColor: "#FFB946",
+    borderColor: "#9333EA",
     borderTopRightRadius: 12,
   },
   cornerBottomLeft: {
@@ -204,7 +202,7 @@ const styles = StyleSheet.create({
     left: 0,
     borderBottomWidth: 4,
     borderLeftWidth: 4,
-    borderColor: "#4D7CFE",
+    borderColor: "#9333EA",
     borderBottomLeftRadius: 12,
   },
   cornerBottomRight: {
@@ -212,7 +210,7 @@ const styles = StyleSheet.create({
     right: 0,
     borderBottomWidth: 4,
     borderRightWidth: 4,
-    borderColor: "#3DD598",
+    borderColor: "#9333EA",
     borderBottomRightRadius: 12,
   },
   bottomSection: {
@@ -255,6 +253,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 10,
     borderRadius: 21,
+    backgroundColor: "#9333EA",
   },
   activeTab: {
     backgroundColor: "white",
