@@ -32,7 +32,10 @@ const ScratchCardOverlay: React.FC<ScratchCardProps> = ({
   const handleReveal = () => {
     setRevealed(true);
     onReveal(amount);
-    confettiRef.current?.play();
+    if (confettiRef.current) {
+      confettiRef.current.reset();
+      confettiRef.current.play();
+    }
   };
 
   useEffect(() => {
@@ -47,21 +50,21 @@ const ScratchCardOverlay: React.FC<ScratchCardProps> = ({
   return (
     <View style={styles.overlay}>
       <View style={styles.overlayCard}>
-        {revealed ? (
-          <View style={styles.revealedCard}>
+        <View style={styles.cardContent}>
+          {revealed ? (
             <Text style={styles.rewardAmount}>${amount.toFixed(2)}</Text>
-            <LottieView
-              ref={confettiRef}
-              source={require("../../assets/confetti.json")}
-              style={styles.confetti}
-              loop={false}
-            />
-          </View>
-        ) : (
-          <View style={styles.unrevealedCard}>
+          ) : (
             <Text style={styles.giftEmoji}>🎁</Text>
-          </View>
-        )}
+          )}
+        </View>
+        <LottieView
+          ref={confettiRef}
+          source={require("../../assets/confetti.json")}
+          style={styles.confetti}
+          loop={false}
+          speed={0.7}
+          autoPlay={false}
+        />
       </View>
       {!revealed && (
         <TouchableOpacity style={styles.revealButton} onPress={handleReveal}>
@@ -109,12 +112,12 @@ export default function Rewards() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity>
-            <ArrowLeft color="#4338CA" size={24} />
+          <TouchableOpacity style={styles.headerButton}>
+            <ArrowLeft color="white" size={24} />
           </TouchableOpacity>
           <Text style={styles.totalRewards}>${totalRewards} total rewards</Text>
-          <TouchableOpacity>
-            <MoreVertical color="#4338CA" size={24} />
+          <TouchableOpacity style={styles.headerButton}>
+            <MoreVertical color="white" size={24} />
           </TouchableOpacity>
         </View>
 
@@ -131,7 +134,7 @@ export default function Rewards() {
                       ? "#22C55E"
                       : index === 5
                       ? "#F59E0B"
-                      : "rgba(67, 56, 202, 0.2)",
+                      : "rgba(255, 255, 255, 0.2)",
                 },
               ]}
             >
@@ -150,11 +153,14 @@ export default function Rewards() {
               key={index}
               style={styles.cardWrapper}
               onPress={() => openScratchCard(index)}
+              disabled={scratchedCards[index]}
             >
               <View
                 style={[
                   styles.card,
-                  scratchedCards[index] && styles.scratchedCard,
+                  scratchedCards[index]
+                    ? styles.scratchedCard
+                    : styles.unscratchedCard,
                 ]}
               >
                 {scratchedCards[index] ? (
@@ -185,7 +191,7 @@ export default function Rewards() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#9333EA",
   },
   scrollContent: {
     flexGrow: 1,
@@ -198,8 +204,16 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingTop: 20,
   },
+  headerButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   totalRewards: {
-    color: "#4338CA",
+    color: "white",
     fontSize: 20,
     fontWeight: "600",
   },
@@ -223,7 +237,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   rewardsTitle: {
-    color: "#4338CA",
+    color: "white",
     fontSize: 24,
     fontWeight: "bold",
     marginLeft: 16,
@@ -243,18 +257,15 @@ const styles = StyleSheet.create({
   },
   card: {
     flex: 1,
-    backgroundColor: "#4338CA",
     borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+  },
+  unscratchedCard: {
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
   },
   scratchedCard: {
-    backgroundColor: "#3730A3",
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
   },
   cardAmount: {
     color: "white",
@@ -266,50 +277,41 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    backgroundColor: "#9333EA",
     justifyContent: "center",
     alignItems: "center",
   },
   overlayCard: {
     width: SCREEN_WIDTH * 0.8,
     aspectRatio: 1,
-    backgroundColor: "#4338CA",
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
     overflow: "hidden",
   },
-  revealedCard: {
-    flex: 1,
+  cardContent: {
+    position: "absolute",
     width: "100%",
+    height: "100%",
     justifyContent: "center",
     alignItems: "center",
-  },
-  unrevealedCard: {
-    flex: 1,
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
+    zIndex: 2,
   },
   rewardAmount: {
     color: "white",
     fontSize: 48,
     fontWeight: "bold",
-    zIndex: 2,
   },
   confetti: {
     position: "absolute",
-    width: "100%",
-    height: "100%",
+    width: SCREEN_WIDTH,
+    height: SCREEN_WIDTH,
+    zIndex: 1,
   },
   revealButton: {
     marginTop: 20,
-    backgroundColor: "#4338CA",
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 20,
