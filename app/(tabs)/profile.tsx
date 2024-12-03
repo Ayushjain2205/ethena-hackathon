@@ -80,6 +80,9 @@ const QRCodeModal = ({
     );
   };
 
+  const logoImage = require("../../assets/images/altura.png");
+  console.log("Logo image:", logoImage);
+
   return (
     <Modal visible={visible} transparent={true} animationType="fade">
       <View className="flex-1 justify-center items-center bg-black/50">
@@ -115,6 +118,10 @@ const QRCodeModal = ({
                 size={220}
                 color="black"
                 backgroundColor="white"
+                logo={logoImage || undefined}
+                logoSize={60}
+                logoBackgroundColor="white"
+                logoBorderRadius={30}
               />
             </View>
 
