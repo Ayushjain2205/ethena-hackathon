@@ -49,8 +49,8 @@ export default function Home() {
           </View>
           <TouchableOpacity>
             <Image
-              source={{ uri: "https://via.placeholder.com/40" }}
-              className="w-10 h-10 rounded-full"
+              source={require("../../assets/images/altura.png")}
+              className="w-10 h-10 "
             />
           </TouchableOpacity>
         </View>
